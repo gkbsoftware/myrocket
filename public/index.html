@@ -1,0 +1,54 @@
+<html>
+<head>
+  <title>Rocket Surgery</title>
+  <script src="https://fb.me/react-0.13.3.js"></script>
+  <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
+</head>
+<body>
+  <h1>Rocket Surgery</h1>
+
+  <div id="launches"></div>
+
+  <script type="text/jsx">
+    var launches = [];
+
+    var Launches = React.createClass({
+      render: function(){
+        return (
+          <ul>
+            {this.props.launches.map(function(launch){ return <li>{launch.ship}</li> })}
+          </ul>
+        );
+      }
+    })
+
+    var launchesDiv = document.getElementById('launches');
+    var render = function() {
+      React.render(<Launches launches={launches} />, launchesDiv);
+    }
+
+    fetch('/launches')
+      .then(function(req){ return req.json() })
+      .then(function(launches){
+        React.render(<Launches launches={launches} />, launchesDiv);
+      })
+
+    launch = function(ship){
+      fetch('/launches', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ship: ship
+        })
+      }).then(function(){
+        launches.push({ship: ship})
+        render()
+      })
+    }
+  </script>
+</body>
+</html>
